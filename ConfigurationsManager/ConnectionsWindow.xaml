@@ -1,0 +1,47 @@
+﻿<Controls:MetroWindow
+    x:Class="ConfigurationsManager.ConnectionsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ConfigurationsManager"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Connections"
+    Width="320"
+    Height="320"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <StackPanel Orientation="Vertical">
+        <TextBox
+            Name="ServerTextbox"
+            Margin="10"
+            Controls:TextBoxHelper.ClearTextButton="True"
+            Controls:TextBoxHelper.UseFloatingWatermark="True"
+            Controls:TextBoxHelper.Watermark="Server" />
+        <TextBox
+            Name="DatabaseTextbox"
+            Margin="10"
+            Controls:TextBoxHelper.ClearTextButton="True"
+            Controls:TextBoxHelper.UseFloatingWatermark="True"
+            Controls:TextBoxHelper.Watermark="Database" />
+        <TextBox
+            Name="UsernameTextbox"
+            Margin="10"
+            Controls:TextBoxHelper.ClearTextButton="True"
+            Controls:TextBoxHelper.UseFloatingWatermark="True"
+            Controls:TextBoxHelper.Watermark="Username" />
+        <PasswordBox
+            Name="PasswordTextbox"
+            Margin="10"
+            Controls:TextBoxHelper.ClearTextButton="True"
+            Controls:TextBoxHelper.UseFloatingWatermark="True"
+            Controls:TextBoxHelper.Watermark="Password" />
+        <Button
+            Name="SaveConnectionsButton"
+            Margin="10"
+            BorderBrush="Transparent"
+            Click="SaveConnectionsButton_OnClick"
+            Content="Save"
+            Style="{StaticResource AccentedSquareButtonStyle}" />
+    </StackPanel>
+</Controls:MetroWindow>
