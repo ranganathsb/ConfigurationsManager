@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using MahApps.Metro.Controls;
 
 namespace ConfigurationsManager
@@ -16,6 +17,11 @@ namespace ConfigurationsManager
         {
             var connections = new ConnectionsWindow();
             connections.ShowDialog();
+        }
+
+        private void RefreshButton_OnClick(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
