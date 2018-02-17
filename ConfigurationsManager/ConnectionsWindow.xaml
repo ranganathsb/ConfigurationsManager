@@ -9,6 +9,7 @@
     Title="Connections"
     Width="320"
     Height="320"
+    ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <StackPanel Orientation="Vertical">
