@@ -195,8 +195,10 @@ namespace ConfigurationsManager
 
             PopulateDataGrids();
 
-            var dialog = new SaveFileDialog();
-            dialog.Filter = "Excel File (*.xlsx)|*.xlsx";
+            var dialog = new SaveFileDialog
+            {
+                Filter = "Excel File (*.xlsx)|*.xlsx"
+            };
 
             if (dialog.ShowDialog().GetValueOrDefault())
             {
@@ -222,6 +224,25 @@ namespace ConfigurationsManager
                 }
 
                 Process.Start(file);
+            }
+        }
+
+        private void ImportButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Excel File (*.xlsx)|*.xlsx"
+            };
+
+            if (dialog.ShowDialog().GetValueOrDefault())
+            {
+                var file = dialog.FileName;
+
+                using (var package = new ExcelPackage(new FileInfo(file)))
+                {
+                    var configurations = package.Workbook.Worksheets["Configurations"];
+                    var features = package.Workbook.Worksheets["Features"];
+                }
             }
         }
 

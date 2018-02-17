@@ -16,11 +16,37 @@
     WindowState="Maximized"
     mc:Ignorable="d">
     <Grid>
-        <TabControl>
-            <TabItem Header="Export">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Button
+            Name="RefreshButton"
+            Grid.Column="2"
+            Margin="10"
+            BorderBrush="Transparent"
+            Click="RefreshButton_OnClick"
+            Content="Refresh"
+            Style="{StaticResource AccentedSquareButtonStyle}" />
+        <TextBox
+            Name="SearchTextbox"
+            Margin="10"
+            Controls:TextBoxHelper.ClearTextButton="True"
+            Controls:TextBoxHelper.Watermark="Search"
+            TextChanged="SearchTextbox_OnTextChanged" />
+        <TabControl
+            Name="TablesTab"
+            Grid.Row="1"
+            Grid.ColumnSpan="3">
+            <TabItem Header="Configurations">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
@@ -29,189 +55,165 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Button
-                        Name="RefreshButton"
+                    <DataGrid
+                        Name="ConfigDatagrid"
+                        Grid.ColumnSpan="3"
+                        Margin="10"
+                        ColumnWidth="*"
+                        SelectionChanged="ConfigDatagrid_OnSelectionChanged"
+                        SelectionMode="Single" />
+                    <TextBox
+                        Name="ConfigInstanceTextbox"
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="10"
+                        VerticalAlignment="Center"
+                        Controls:TextBoxHelper.ClearTextButton="True"
+                        Controls:TextBoxHelper.UseFloatingWatermark="True"
+                        Controls:TextBoxHelper.Watermark="Instance" />
+                    <TextBox
+                        Name="ConfigKeyTextbox"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="10"
+                        VerticalAlignment="Center"
+                        Controls:TextBoxHelper.ClearTextButton="True"
+                        Controls:TextBoxHelper.UseFloatingWatermark="True"
+                        Controls:TextBoxHelper.Watermark="Configuration" />
+                    <TextBox
+                        Name="ConfigValueTextbox"
+                        Grid.Row="1"
                         Grid.Column="2"
                         Margin="10"
-                        BorderBrush="Transparent"
-                        Click="RefreshButton_OnClick"
-                        Content="Refresh"
-                        Style="{StaticResource AccentedSquareButtonStyle}" />
-                    <TextBox
-                        Name="SearchTextbox"
-                        Margin="10"
+                        VerticalAlignment="Center"
                         Controls:TextBoxHelper.ClearTextButton="True"
-                        Controls:TextBoxHelper.Watermark="Search"
-                        TextChanged="SearchTextbox_OnTextChanged" />
-                    <TabControl
-                        Name="TablesTab"
+                        Controls:TextBoxHelper.UseFloatingWatermark="True"
+                        Controls:TextBoxHelper.Watermark="Value" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Features">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <DataGrid
+                        Name="FeaturesDatagrid"
+                        Grid.ColumnSpan="3"
+                        Margin="10"
+                        ColumnWidth="*"
+                        SelectionChanged="FeaturesDatagrid_OnSelectionChanged"
+                        SelectionMode="Single" />
+                    <TextBox
+                        Name="FeatureInstanceTextbox"
                         Grid.Row="1"
-                        Grid.ColumnSpan="3">
-                        <TabItem Header="Configurations">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <DataGrid
-                                    Name="ConfigDatagrid"
-                                    Grid.ColumnSpan="3"
-                                    Margin="10"
-                                    ColumnWidth="*"
-                                    SelectionChanged="ConfigDatagrid_OnSelectionChanged"
-                                    SelectionMode="Single" />
-                                <TextBox
-                                    Name="ConfigInstanceTextbox"
-                                    Grid.Row="1"
-                                    Grid.Column="0"
-                                    Margin="10"
-                                    VerticalAlignment="Center"
-                                    Controls:TextBoxHelper.ClearTextButton="True"
-                                    Controls:TextBoxHelper.UseFloatingWatermark="True"
-                                    Controls:TextBoxHelper.Watermark="Instance" />
-                                <TextBox
-                                    Name="ConfigKeyTextbox"
-                                    Grid.Row="1"
-                                    Grid.Column="1"
-                                    Margin="10"
-                                    VerticalAlignment="Center"
-                                    Controls:TextBoxHelper.ClearTextButton="True"
-                                    Controls:TextBoxHelper.UseFloatingWatermark="True"
-                                    Controls:TextBoxHelper.Watermark="Configuration" />
-                                <TextBox
-                                    Name="ConfigValueTextbox"
-                                    Grid.Row="1"
-                                    Grid.Column="2"
-                                    Margin="10"
-                                    VerticalAlignment="Center"
-                                    Controls:TextBoxHelper.ClearTextButton="True"
-                                    Controls:TextBoxHelper.UseFloatingWatermark="True"
-                                    Controls:TextBoxHelper.Watermark="Value" />
-                            </Grid>
-                        </TabItem>
-                        <TabItem Header="Features">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <DataGrid
-                                    Name="FeaturesDatagrid"
-                                    Grid.ColumnSpan="3"
-                                    Margin="10"
-                                    ColumnWidth="*"
-                                    SelectionChanged="FeaturesDatagrid_OnSelectionChanged"
-                                    SelectionMode="Single" />
-                                <TextBox
-                                    Name="FeatureInstanceTextbox"
-                                    Grid.Row="1"
-                                    Grid.Column="0"
-                                    Margin="10"
-                                    VerticalAlignment="Center"
-                                    Controls:TextBoxHelper.ClearTextButton="True"
-                                    Controls:TextBoxHelper.UseFloatingWatermark="True"
-                                    Controls:TextBoxHelper.Watermark="Instance" />
-                                <TextBox
-                                    Name="FeatureKeyTextbox"
-                                    Grid.Row="1"
-                                    Grid.Column="1"
-                                    Margin="10"
-                                    VerticalAlignment="Center"
-                                    Controls:TextBoxHelper.ClearTextButton="True"
-                                    Controls:TextBoxHelper.UseFloatingWatermark="True"
-                                    Controls:TextBoxHelper.Watermark="Flag" />
-                                <Controls:ToggleSwitch
-                                    Name="FeatureValueToggle"
-                                    Grid.Row="1"
-                                    Grid.Column="2"
-                                    Margin="10"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    OffLabel=""
-                                    OnLabel="" />
-                            </Grid>
-                        </TabItem>
-                    </TabControl>
-                    <Button
-                        Name="UpsertButton"
-                        Grid.Row="2"
                         Grid.Column="0"
-                        Width="48"
-                        Height="48"
+                        Margin="10"
+                        VerticalAlignment="Center"
+                        Controls:TextBoxHelper.ClearTextButton="True"
+                        Controls:TextBoxHelper.UseFloatingWatermark="True"
+                        Controls:TextBoxHelper.Watermark="Instance" />
+                    <TextBox
+                        Name="FeatureKeyTextbox"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="10"
+                        VerticalAlignment="Center"
+                        Controls:TextBoxHelper.ClearTextButton="True"
+                        Controls:TextBoxHelper.UseFloatingWatermark="True"
+                        Controls:TextBoxHelper.Watermark="Flag" />
+                    <Controls:ToggleSwitch
+                        Name="FeatureValueToggle"
+                        Grid.Row="1"
+                        Grid.Column="2"
                         Margin="10"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        Click="UpsertButton_OnClick"
-                        Style="{DynamicResource MetroCircleButtonStyle}"
-                        ToolTip="Insert / Update">
-                        <Path
-                            Margin="16"
-                            Data="M5.4189969,24.678986L5.4189969,27.915009 26.188982,27.915009 26.188982,24.678986z M8.2970601,0.038998604L12.289056,0.038998604 12.289056,8.1850023 8.2970601,8.1850023z M0,0L5.2730013,0 5.2730013,9.7799988 26.188982,9.7799988 26.188982,0 31.653999,0 31.653999,32 0,32z"
-                            Fill="{StaticResource AccentBaseColorBrush}"
-                            RenderTransformOrigin="0.5,0.5"
-                            Stretch="Uniform" />
-                    </Button>
-                    <Button
-                        Name="RemoveButton"
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Width="48"
-                        Height="48"
-                        Margin="10"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Click="RemoveButton_OnClick"
-                        Style="{DynamicResource MetroCircleButtonStyle}"
-                        ToolTip="Remove">
-                        <Path
-                            Margin="16"
-                            Data="M2.0050016,10.291992L6.2790426,10.291992 6.2790426,28.350006 9.5599821,28.350006 9.5599821,10.291992 14.490027,10.291992 14.490027,28.350006 17.772981,28.350006 17.772981,10.291992 22.04696,10.291992 22.04696,32 2.0050016,32z M0,3.5249939L24.053,3.5249939 24.053,6.6329956 0,6.6329956z M6.5170182,0L17.535981,0 17.535981,2.8399963 6.5170182,2.8399963z"
-                            Fill="{StaticResource AccentBaseColorBrush}"
-                            RenderTransformOrigin="0.5,0.5"
-                            Stretch="Uniform" />
-                    </Button>
-                    <Button
-                        Name="ClearButton"
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Width="48"
-                        Height="48"
-                        Margin="10"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        Click="ClearButton_OnClick"
-                        Style="{DynamicResource MetroCircleButtonStyle}"
-                        ToolTip="Clear Selection">
-                        <Path
-                            Margin="16"
-                            Data="M19.996445,10.883694L12.370439,19.133822C12.370439,19.133822,17.670508,27.157943,18.327494,28.789971L20.454455,27.549954C20.454455,27.549954 18.912457,24.601905 18.048439,23.863894 18.048439,23.863894 17.247532,22.754876 18.655497,23.157881 18.655497,23.157881 21.879509,25.814927 22.312495,26.107932L24.458498,24.185897C24.458498,24.185897,24.165528,23.521893,23.725462,22.97588L21.19347,20.12984C21.19347,20.12984 20.743517,19.214823 21.743521,19.531827 21.743521,19.531827 24.445559,21.695861 26.18348,22.239869L27.849503,19.979834C27.849503,19.979834 24.745486,16.999789 24.512453,16.43978 24.512453,16.43978 23.969483,15.939772 24.745486,15.855771 24.745486,15.855771 27.915543,18.049805 29.105488,17.939803L29.106465,17.941806C29.106465,17.941806 30.112572,16.078774 30.052513,15.925771 30.052513,15.925771 21.496451,11.899709 19.996445,10.883694z M19.726424,8.4966571C22.651484,11.0667,30.542506,14.129746,30.542506,14.129746L30.544581,14.129746C32.753575,14.653753 31.791535,16.469783 31.791535,16.45978 27.998551,25.477917 18.986431,30.414998 18.986431,30.414998 17.38645,31.531012 16.626437,29.120978 16.626437,29.120978 14.790492,25.462918 10.133493,19.075822 10.133493,19.075822z M1.8441388,0.00052898756C1.9766314,-0.0054709527,2.1108788,0.039529815,2.2143947,0.1375311L10.939404,8.0846517C11.028393,8.1616523,11.074414,8.2716548,11.09248,8.3816573L13.024495,6.2646238C14.644496,5.3646085,16.030487,6.1246226,16.030487,6.1246226L16.027436,6.125622 18.290507,7.7616489 9.0283855,17.830804 7.4214457,15.618768C6.4443916,13.581738,7.5744008,12.231715,7.5744008,12.231715L9.1984304,10.457689C9.0844158,10.451688,8.9804119,10.415689,8.8884929,10.335685L0.17141836,2.3825645C-0.041595283,2.1895606,-0.058563124,1.862556,0.13443055,1.6525533L1.4844117,0.16952929C1.5809085,0.063528448,1.7116463,0.006528362,1.8441388,0.00052898756z"
-                            Fill="{StaticResource AccentBaseColorBrush}"
-                            RenderTransformOrigin="0.5,0.5"
-                            Stretch="Uniform" />
-                    </Button>
-                    <Button
-                        Name="ExportButton"
-                        Grid.Row="2"
-                        Grid.Column="2"
-                        Margin="10"
-                        VerticalAlignment="Center"
-                        BorderBrush="Transparent"
-                        Click="ExportButton_OnClick"
-                        Content="Export"
-                        Style="{StaticResource AccentedSquareButtonStyle}" />
+                        OffLabel=""
+                        OnLabel="" />
                 </Grid>
             </TabItem>
-            <TabItem Header="Import" />
         </TabControl>
+        <Button
+            Name="UpsertButton"
+            Grid.Row="2"
+            Grid.Column="0"
+            Width="48"
+            Height="48"
+            Margin="10"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Click="UpsertButton_OnClick"
+            Style="{DynamicResource MetroCircleButtonStyle}"
+            ToolTip="Insert / Update">
+            <Path
+                Margin="16"
+                Data="M5.4189969,24.678986L5.4189969,27.915009 26.188982,27.915009 26.188982,24.678986z M8.2970601,0.038998604L12.289056,0.038998604 12.289056,8.1850023 8.2970601,8.1850023z M0,0L5.2730013,0 5.2730013,9.7799988 26.188982,9.7799988 26.188982,0 31.653999,0 31.653999,32 0,32z"
+                Fill="{StaticResource AccentBaseColorBrush}"
+                RenderTransformOrigin="0.5,0.5"
+                Stretch="Uniform" />
+        </Button>
+        <Button
+            Name="RemoveButton"
+            Grid.Row="2"
+            Grid.Column="0"
+            Width="48"
+            Height="48"
+            Margin="10"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Click="RemoveButton_OnClick"
+            Style="{DynamicResource MetroCircleButtonStyle}"
+            ToolTip="Remove">
+            <Path
+                Margin="16"
+                Data="M2.0050016,10.291992L6.2790426,10.291992 6.2790426,28.350006 9.5599821,28.350006 9.5599821,10.291992 14.490027,10.291992 14.490027,28.350006 17.772981,28.350006 17.772981,10.291992 22.04696,10.291992 22.04696,32 2.0050016,32z M0,3.5249939L24.053,3.5249939 24.053,6.6329956 0,6.6329956z M6.5170182,0L17.535981,0 17.535981,2.8399963 6.5170182,2.8399963z"
+                Fill="{StaticResource AccentBaseColorBrush}"
+                RenderTransformOrigin="0.5,0.5"
+                Stretch="Uniform" />
+        </Button>
+        <Button
+            Name="ClearButton"
+            Grid.Row="2"
+            Grid.Column="0"
+            Width="48"
+            Height="48"
+            Margin="10"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Click="ClearButton_OnClick"
+            Style="{DynamicResource MetroCircleButtonStyle}"
+            ToolTip="Clear Selection">
+            <Path
+                Margin="16"
+                Data="M19.996445,10.883694L12.370439,19.133822C12.370439,19.133822,17.670508,27.157943,18.327494,28.789971L20.454455,27.549954C20.454455,27.549954 18.912457,24.601905 18.048439,23.863894 18.048439,23.863894 17.247532,22.754876 18.655497,23.157881 18.655497,23.157881 21.879509,25.814927 22.312495,26.107932L24.458498,24.185897C24.458498,24.185897,24.165528,23.521893,23.725462,22.97588L21.19347,20.12984C21.19347,20.12984 20.743517,19.214823 21.743521,19.531827 21.743521,19.531827 24.445559,21.695861 26.18348,22.239869L27.849503,19.979834C27.849503,19.979834 24.745486,16.999789 24.512453,16.43978 24.512453,16.43978 23.969483,15.939772 24.745486,15.855771 24.745486,15.855771 27.915543,18.049805 29.105488,17.939803L29.106465,17.941806C29.106465,17.941806 30.112572,16.078774 30.052513,15.925771 30.052513,15.925771 21.496451,11.899709 19.996445,10.883694z M19.726424,8.4966571C22.651484,11.0667,30.542506,14.129746,30.542506,14.129746L30.544581,14.129746C32.753575,14.653753 31.791535,16.469783 31.791535,16.45978 27.998551,25.477917 18.986431,30.414998 18.986431,30.414998 17.38645,31.531012 16.626437,29.120978 16.626437,29.120978 14.790492,25.462918 10.133493,19.075822 10.133493,19.075822z M1.8441388,0.00052898756C1.9766314,-0.0054709527,2.1108788,0.039529815,2.2143947,0.1375311L10.939404,8.0846517C11.028393,8.1616523,11.074414,8.2716548,11.09248,8.3816573L13.024495,6.2646238C14.644496,5.3646085,16.030487,6.1246226,16.030487,6.1246226L16.027436,6.125622 18.290507,7.7616489 9.0283855,17.830804 7.4214457,15.618768C6.4443916,13.581738,7.5744008,12.231715,7.5744008,12.231715L9.1984304,10.457689C9.0844158,10.451688,8.9804119,10.415689,8.8884929,10.335685L0.17141836,2.3825645C-0.041595283,2.1895606,-0.058563124,1.862556,0.13443055,1.6525533L1.4844117,0.16952929C1.5809085,0.063528448,1.7116463,0.006528362,1.8441388,0.00052898756z"
+                Fill="{StaticResource AccentBaseColorBrush}"
+                RenderTransformOrigin="0.5,0.5"
+                Stretch="Uniform" />
+        </Button>
+        <Button
+            Name="ImportButton"
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="10"
+            VerticalAlignment="Center"
+            BorderBrush="Transparent"
+            Content="Import"
+            Style="{StaticResource AccentedSquareButtonStyle}" />
+        <Button
+            Name="ExportButton"
+            Grid.Row="2"
+            Grid.Column="2"
+            Margin="10"
+            VerticalAlignment="Center"
+            BorderBrush="Transparent"
+            Click="ExportButton_OnClick"
+            Content="Export"
+            Style="{StaticResource AccentedSquareButtonStyle}" />
     </Grid>
 </Controls:MetroWindow>
