@@ -1,8 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using MahApps.Metro.Controls;
+using Microsoft.Win32;
+using OfficeOpenXml;
+using OfficeOpenXml.Table;
 
 namespace ConfigurationsManager
 {
@@ -180,6 +186,43 @@ namespace ConfigurationsManager
             }
             
             PopulateDataGrids();
+        }
+
+        private void ExportButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            _configurations = _dataModel.Configurations.ToList();
+            _featureFlags = _dataModel.FeatureFlags.ToList();
+
+            PopulateDataGrids();
+
+            var dialog = new SaveFileDialog();
+            dialog.Filter = "Excel File (*.xlsx)|*.xlsx";
+
+            if (dialog.ShowDialog().GetValueOrDefault())
+            {
+                var file = dialog.FileName;
+
+                using (var package = new ExcelPackage())
+                {
+                    var configurations = package.Workbook.Worksheets.Add("Configurations");
+                    configurations.View.ShowGridLines = false;
+                    configurations.Tables.Add(
+                        configurations.Cells[1, 1].LoadFromCollection(_configurations, true),
+                        string.Empty).TableStyle = TableStyles.Medium10;
+                    configurations.Cells.AutoFitColumns();
+
+                    var features = package.Workbook.Worksheets.Add("Features");
+                    features.View.ShowGridLines = false;
+                    features.Tables.Add(
+                        features.Cells[1, 1].LoadFromCollection(_featureFlags, true),
+                        String.Empty).TableStyle = TableStyles.Medium10;
+                    features.Cells.AutoFitColumns();
+
+                    package.SaveAs(new FileInfo(file));
+                }
+
+                Process.Start(file);
+            }
         }
 
         private void PopulateDataGrids()

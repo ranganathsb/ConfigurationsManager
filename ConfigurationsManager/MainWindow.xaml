@@ -206,6 +206,7 @@
                         Margin="10"
                         VerticalAlignment="Center"
                         BorderBrush="Transparent"
+                        Click="ExportButton_OnClick"
                         Content="Export"
                         Style="{StaticResource AccentedSquareButtonStyle}" />
                 </Grid>
