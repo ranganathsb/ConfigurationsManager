@@ -9,6 +9,7 @@
     Title="Configuration Manager"
     Width="640"
     Height="480"
+    Icon="Resources/flag.ico"
     ResizeMode="CanMinimize"
     ShowIconOnTitleBar="True"
     WindowStartupLocation="CenterScreen"
@@ -16,12 +17,11 @@
     mc:Ignorable="d">
     <Grid>
         <TabControl>
-            <TabItem Header="Configurations">
+            <TabItem Header="Export">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
@@ -39,47 +39,119 @@
                         Style="{StaticResource AccentedSquareButtonStyle}" />
                     <TextBox
                         Name="SearchTextbox"
-                        Grid.ColumnSpan="2"
                         Margin="10"
                         Controls:TextBoxHelper.ClearTextButton="True"
-                        Controls:TextBoxHelper.Watermark="Search" />
-                    <DataGrid
-                        Name="ConfigDatagrid"
+                        Controls:TextBoxHelper.Watermark="Search"
+                        TextChanged="SearchTextbox_OnTextChanged" />
+                    <TabControl
+                        Name="TablesTab"
                         Grid.Row="1"
-                        Grid.ColumnSpan="3"
-                        Margin="10" />
-                    <TextBox
-                        Name="InstanceTextbox"
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Margin="10"
-                        Controls:TextBoxHelper.ClearTextButton="True"
-                        Controls:TextBoxHelper.UseFloatingWatermark="True"
-                        Controls:TextBoxHelper.Watermark="Instance" />
-                    <TextBox
-                        Name="FlagTextbox"
-                        Grid.Row="2"
-                        Grid.Column="1"
-                        Margin="10"
-                        Controls:TextBoxHelper.ClearTextButton="True"
-                        Controls:TextBoxHelper.UseFloatingWatermark="True"
-                        Controls:TextBoxHelper.Watermark="Flag" />
-                    <TextBox
-                        Name="ValueTextbox"
-                        Grid.Row="2"
-                        Grid.Column="2"
-                        Margin="10"
-                        Controls:TextBoxHelper.ClearTextButton="True"
-                        Controls:TextBoxHelper.UseFloatingWatermark="True"
-                        Controls:TextBoxHelper.Watermark="Value" />
+                        Grid.ColumnSpan="3">
+                        <TabItem Header="Configurations">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <DataGrid
+                                    Name="ConfigDatagrid"
+                                    Grid.ColumnSpan="3"
+                                    Margin="10"
+                                    ColumnWidth="*"
+                                    SelectionChanged="ConfigDatagrid_OnSelectionChanged"
+                                    SelectionMode="Single" />
+                                <TextBox
+                                    Name="ConfigInstanceTextbox"
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Margin="10"
+                                    VerticalAlignment="Center"
+                                    Controls:TextBoxHelper.ClearTextButton="True"
+                                    Controls:TextBoxHelper.UseFloatingWatermark="True"
+                                    Controls:TextBoxHelper.Watermark="Instance" />
+                                <TextBox
+                                    Name="ConfigKeyTextbox"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Margin="10"
+                                    VerticalAlignment="Center"
+                                    Controls:TextBoxHelper.ClearTextButton="True"
+                                    Controls:TextBoxHelper.UseFloatingWatermark="True"
+                                    Controls:TextBoxHelper.Watermark="Configuration" />
+                                <TextBox
+                                    Name="ConfigValueTextbox"
+                                    Grid.Row="1"
+                                    Grid.Column="2"
+                                    Margin="10"
+                                    VerticalAlignment="Center"
+                                    Controls:TextBoxHelper.ClearTextButton="True"
+                                    Controls:TextBoxHelper.UseFloatingWatermark="True"
+                                    Controls:TextBoxHelper.Watermark="Value" />
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="Features">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <DataGrid
+                                    Name="FeaturesDatagrid"
+                                    Grid.ColumnSpan="3"
+                                    Margin="10"
+                                    ColumnWidth="*"
+                                    SelectionChanged="FeaturesDatagrid_OnSelectionChanged"
+                                    SelectionMode="Single" />
+                                <TextBox
+                                    Name="FeatureInstanceTextbox"
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Margin="10"
+                                    VerticalAlignment="Center"
+                                    Controls:TextBoxHelper.ClearTextButton="True"
+                                    Controls:TextBoxHelper.UseFloatingWatermark="True"
+                                    Controls:TextBoxHelper.Watermark="Instance" />
+                                <TextBox
+                                    Name="FeatureKeyTextbox"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Margin="10"
+                                    VerticalAlignment="Center"
+                                    Controls:TextBoxHelper.ClearTextButton="True"
+                                    Controls:TextBoxHelper.UseFloatingWatermark="True"
+                                    Controls:TextBoxHelper.Watermark="Flag" />
+                                <Controls:ToggleSwitch
+                                    Name="FeatureValueToggle"
+                                    Grid.Row="1"
+                                    Grid.Column="2"
+                                    Margin="10"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    OffLabel=""
+                                    OnLabel="" />
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
                     <Button
                         Name="UpsertButton"
-                        Grid.Row="3"
-                        Grid.Column="1"
-                        Width="50"
-                        Height="50"
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Width="48"
+                        Height="48"
+                        Margin="10"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
+                        Click="UpsertButton_OnClick"
                         Style="{DynamicResource MetroCircleButtonStyle}"
                         ToolTip="Insert / Update">
                         <Path
@@ -91,12 +163,14 @@
                     </Button>
                     <Button
                         Name="RemoveButton"
-                        Grid.Row="3"
-                        Grid.Column="1"
+                        Grid.Row="2"
+                        Grid.Column="0"
                         Width="48"
                         Height="48"
+                        Margin="10"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
+                        Click="RemoveButton_OnClick"
                         Style="{DynamicResource MetroCircleButtonStyle}"
                         ToolTip="Remove">
                         <Path
@@ -108,12 +182,14 @@
                     </Button>
                     <Button
                         Name="ClearButton"
-                        Grid.Row="3"
-                        Grid.Column="1"
+                        Grid.Row="2"
+                        Grid.Column="0"
                         Width="48"
                         Height="48"
+                        Margin="10"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
+                        Click="ClearButton_OnClick"
                         Style="{DynamicResource MetroCircleButtonStyle}"
                         ToolTip="Clear Selection">
                         <Path
@@ -125,9 +201,10 @@
                     </Button>
                     <Button
                         Name="ExportButton"
-                        Grid.Row="3"
+                        Grid.Row="2"
                         Grid.Column="2"
                         Margin="10"
+                        VerticalAlignment="Center"
                         BorderBrush="Transparent"
                         Content="Export"
                         Style="{StaticResource AccentedSquareButtonStyle}" />
