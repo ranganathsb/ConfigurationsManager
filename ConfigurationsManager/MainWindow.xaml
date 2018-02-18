@@ -203,6 +203,7 @@
             Margin="10"
             VerticalAlignment="Center"
             BorderBrush="Transparent"
+            Click="ImportButton_OnClick"
             Content="Import"
             Style="{StaticResource AccentedSquareButtonStyle}" />
         <Button

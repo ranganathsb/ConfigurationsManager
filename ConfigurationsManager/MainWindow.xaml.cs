@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using OfficeOpenXml;
 using OfficeOpenXml.Table;
@@ -227,7 +228,7 @@ namespace ConfigurationsManager
             }
         }
 
-        private void ImportButton_OnClick(object sender, RoutedEventArgs e)
+        private async void ImportButton_OnClick(object sender, RoutedEventArgs e)
         {
             var dialog = new OpenFileDialog
             {
@@ -240,8 +241,176 @@ namespace ConfigurationsManager
 
                 using (var package = new ExcelPackage(new FileInfo(file)))
                 {
-                    var configurations = package.Workbook.Worksheets["Configurations"];
-                    var features = package.Workbook.Worksheets["Features"];
+                    var configWorksheet = package.Workbook.Worksheets["Configurations"];
+                    var conflictConfigurations = new List<Configuration>();
+                    if (configWorksheet.Dimension.End.Row > 1)
+                    {
+                        var configurations = Enumerable.Range(2, configWorksheet.Dimension.End.Row - 1)
+                            .Select(i => new Configuration
+                            {
+                                InstanceName = configWorksheet.Cells[i, 1].Value?.ToString(),
+                                ConfigurationKey = configWorksheet.Cells[i, 2].Value?.ToString(),
+                                ConfigurationValue = configWorksheet.Cells[i, 3].Value?.ToString()
+                            })
+                            .ToList();
+
+                        var existingItems =
+                            (from dbConfig in _configurations
+                                from config in configurations
+                                where config.InstanceName == dbConfig.InstanceName
+                                      && dbConfig.ConfigurationKey == config.ConfigurationKey
+                                      && dbConfig.ConfigurationValue == config.ConfigurationValue
+                                select config).ToList();
+
+                        conflictConfigurations.AddRange(
+                            from dbConfig in _configurations
+                            from config in configurations
+                            where config.InstanceName == dbConfig.InstanceName
+                                  && dbConfig.ConfigurationKey == config.ConfigurationKey
+                                  && dbConfig.ConfigurationValue != config.ConfigurationValue
+                            select config);
+
+                        var newItems =
+                            configurations
+                            .Where(c => !existingItems.Contains(c) && !conflictConfigurations.Contains(c))
+                            .ToList();
+
+                        _dataModel.Configurations.AddRange(newItems);
+                        _dataModel.SaveChanges();
+                    }
+
+                    var featureWorksheet = package.Workbook.Worksheets["Features"];
+                    var conflictFeatures = new List<FeatureFlag>();
+                    if (featureWorksheet.Dimension.End.Row > 1)
+                    {
+                        var features = Enumerable.Range(2, featureWorksheet.Dimension.End.Row - 1)
+                            .Select(i => new FeatureFlag
+                            {
+                                InstanceName = featureWorksheet.Cells[i, 1].Value?.ToString(),
+                                FlagName = featureWorksheet.Cells[i, 2].Value?.ToString(),
+                                FlagValue = bool.Parse(featureWorksheet.Cells[i, 3].Value?.ToString() ?? "false")
+                            })
+                            .ToList();
+
+                        var existingItems =
+                            (from dbFeature in _featureFlags
+                                from feature in features
+                                where feature.InstanceName == dbFeature.InstanceName
+                                      && dbFeature.FlagName == feature.FlagName
+                                      && dbFeature.FlagValue == feature.FlagValue
+                                select feature).ToList();
+
+                        conflictFeatures.AddRange(
+                            from dbFeature in _featureFlags
+                            from feature in features
+                            where feature.InstanceName == dbFeature.InstanceName
+                                  && dbFeature.FlagName == feature.FlagName
+                                  && dbFeature.FlagValue != feature.FlagValue
+                            select feature);
+
+                        var newItems =
+                            features
+                            .Where(f => !existingItems.Contains(f) && !conflictFeatures.Contains(f))
+                            .ToList();
+
+                        _dataModel.FeatureFlags.AddRange(newItems);
+                        _dataModel.SaveChanges();
+                    }
+
+                    PopulateDataGrids();
+
+                    // generate excel with conflicting items
+                    if (conflictConfigurations.Any() || conflictFeatures.Any())
+                    {
+                        await this.ShowMessageAsync("Conflicts", "Found conflicts. Save as excel for further analysis.");
+                        GenerateConflictExcel(conflictConfigurations, conflictFeatures);
+
+                        conflictConfigurations.ForEach(c =>
+                        {
+                            _dataModel.Configurations.First(db =>
+                                    db.InstanceName == c.InstanceName && db.ConfigurationKey == c.ConfigurationKey)
+                                .ConfigurationValue = c.ConfigurationValue;
+
+                            _dataModel.SaveChanges();
+                        });
+
+                        conflictFeatures.ForEach(c =>
+                        {
+                            _dataModel.FeatureFlags.First(db =>
+                                    db.InstanceName == c.InstanceName && db.FlagName == c.FlagName)
+                                .FlagValue = c.FlagValue;
+
+                            _dataModel.SaveChanges();
+                        });
+                    }
+                }
+            }
+        }
+
+        private void GenerateConflictExcel(
+            IReadOnlyCollection<Configuration> configurations,
+            IReadOnlyCollection<FeatureFlag> features)
+        {
+            var dialog = new SaveFileDialog
+            {
+                Filter = "Excel File (*.xlsx)|*.xlsx"
+            };
+
+            if (dialog.ShowDialog().GetValueOrDefault())
+            {
+                var file = dialog.FileName;
+
+                using (var package = new ExcelPackage())
+                {
+                    if (configurations.Any())
+                    {
+                        var worksheet = package.Workbook.Worksheets.Add("Configurations");
+
+                        var conflicts =
+                            from config in configurations
+                            from dbConfig in _configurations
+                            where config.InstanceName == dbConfig.InstanceName
+                                  && config.ConfigurationKey == dbConfig.ConfigurationKey
+                            select new
+                            {
+                                config.InstanceName,
+                                config.ConfigurationKey,
+                                config.ConfigurationValue,
+                                OldValue = dbConfig.ConfigurationValue
+                            };
+
+                        worksheet.View.ShowGridLines = false;
+                        worksheet.Tables.Add(
+                            worksheet.Cells[1, 1].LoadFromCollection(conflicts, true),
+                            string.Empty).TableStyle = TableStyles.Medium10;
+                        worksheet.Cells.AutoFitColumns();
+                    }
+
+                    if (features.Any())
+                    {
+                        var worksheet = package.Workbook.Worksheets.Add("Features");
+
+                        var conflicts =
+                            from feature in features
+                            from dbFeatute in _featureFlags
+                            where feature.InstanceName == dbFeatute.InstanceName
+                                  && feature.FlagName == dbFeatute.FlagName
+                            select new
+                            {
+                                feature.InstanceName,
+                                feature.FlagName,
+                                feature.FlagValue,
+                                OldValue = dbFeatute.FlagValue
+                            };
+
+                        worksheet.View.ShowGridLines = false;
+                        worksheet.Tables.Add(
+                            worksheet.Cells[1, 1].LoadFromCollection(conflicts, true),
+                            string.Empty).TableStyle = TableStyles.Medium10;
+                        worksheet.Cells.AutoFitColumns();
+                    }
+
+                    package.SaveAs(new FileInfo(file));
                 }
             }
         }
