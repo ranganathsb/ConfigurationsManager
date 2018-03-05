@@ -6,6 +6,14 @@ namespace ConfigurationsManager
     {
         public DataModel(
             string server,
+            string database)
+            : base($"data source={server};initial catalog={database};persist security info=True;integrated security=true;")
+        {
+
+        }
+
+        public DataModel(
+            string server,
             string database,
             string username,
             string password)

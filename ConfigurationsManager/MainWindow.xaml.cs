@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using MahApps.Metro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
@@ -27,22 +29,49 @@ namespace ConfigurationsManager
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            // load accents
+            var theme = ThemeManager.DetectAppStyle(Application.Current);
+            AccentsCombobox.ItemsSource = ThemeManager.Accents.Select(a => a.Name).ToList();
+            AccentsCombobox.SelectedItem = theme.Item2.Name;
+            AccentsCombobox.SelectionChanged += AccentsCombobox_OnSelectionChanged;
+
             var connections = new ConnectionsWindow();
             connections.ShowDialog();
 
-            _dataModel = new DataModel(
-                Properties.Settings.Default.Server,
-                Properties.Settings.Default.Database,
-                Properties.Settings.Default.Username,
-                Properties.Settings.Default.Password);
+            if (
+                string.IsNullOrEmpty(Properties.Settings.Default.Username)
+                || string.IsNullOrEmpty(Properties.Settings.Default.Password))
+            {
+                _dataModel = new DataModel(
+                    Properties.Settings.Default.Server,
+                    Properties.Settings.Default.Database);
+            }
+            else
+            {
+                _dataModel = new DataModel(
+                    Properties.Settings.Default.Server,
+                    Properties.Settings.Default.Database,
+                    Properties.Settings.Default.Username,
+                    Properties.Settings.Default.Password);
+            }
         }
 
         private void RefreshButton_OnClick(object sender, RoutedEventArgs e)
         {
             _configurations = _dataModel.Configurations.ToList();
             _featureFlags = _dataModel.FeatureFlags.ToList();
+            var result = _configurations.Select(c => c.InstanceName)
+                .Concat(_featureFlags.Select(f => f.InstanceName))
+                .Distinct()
+                .ToList();
 
-            PopulateDataGrids();
+            InstancesComboBox.ItemsSource = null;
+            InstancesComboBox.SelectedIndex = -1;
+
+            if (result.Any())
+            {
+                PopulateInstances();
+            }
         }
 
         private void SearchTextbox_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -210,15 +239,19 @@ namespace ConfigurationsManager
                     var configurations = package.Workbook.Worksheets.Add("Configurations");
                     configurations.View.ShowGridLines = false;
                     configurations.Tables.Add(
-                        configurations.Cells[1, 1].LoadFromCollection(_configurations, true),
-                        string.Empty).TableStyle = TableStyles.Medium10;
+                        configurations.Cells[1, 1].LoadFromCollection(
+                            _configurations.Where(c => c.InstanceName.ToLower().Equals(InstancesComboBox.SelectionBoxItem.ToString().ToLower())),
+                            true),
+                        string.Empty).TableStyle = TableStyles.Medium14;
                     configurations.Cells.AutoFitColumns();
 
                     var features = package.Workbook.Worksheets.Add("Features");
                     features.View.ShowGridLines = false;
                     features.Tables.Add(
-                        features.Cells[1, 1].LoadFromCollection(_featureFlags, true),
-                        String.Empty).TableStyle = TableStyles.Medium10;
+                        features.Cells[1, 1].LoadFromCollection(
+                            _featureFlags.Where(f => f.InstanceName.ToLower().Equals(InstancesComboBox.SelectionBoxItem.ToString().ToLower())),
+                            true),
+                        String.Empty).TableStyle = TableStyles.Medium14;
                     features.Cells.AutoFitColumns();
 
                     package.SaveAs(new FileInfo(file));
@@ -248,7 +281,7 @@ namespace ConfigurationsManager
                         var configurations = Enumerable.Range(2, configWorksheet.Dimension.End.Row - 1)
                             .Select(i => new Configuration
                             {
-                                InstanceName = configWorksheet.Cells[i, 1].Value?.ToString(),
+                                InstanceName = InstancesComboBox.SelectedItem.ToString(),
                                 ConfigurationKey = configWorksheet.Cells[i, 2].Value?.ToString(),
                                 ConfigurationValue = configWorksheet.Cells[i, 3].Value?.ToString()
                             })
@@ -286,7 +319,7 @@ namespace ConfigurationsManager
                         var features = Enumerable.Range(2, featureWorksheet.Dimension.End.Row - 1)
                             .Select(i => new FeatureFlag
                             {
-                                InstanceName = featureWorksheet.Cells[i, 1].Value?.ToString(),
+                                InstanceName = InstancesComboBox.SelectedItem.ToString(),
                                 FlagName = featureWorksheet.Cells[i, 2].Value?.ToString(),
                                 FlagValue = bool.Parse(featureWorksheet.Cells[i, 3].Value?.ToString() ?? "false")
                             })
@@ -382,7 +415,7 @@ namespace ConfigurationsManager
                         worksheet.View.ShowGridLines = false;
                         worksheet.Tables.Add(
                             worksheet.Cells[1, 1].LoadFromCollection(conflicts, true),
-                            string.Empty).TableStyle = TableStyles.Medium10;
+                            string.Empty).TableStyle = TableStyles.Medium14;
                         worksheet.Cells.AutoFitColumns();
                     }
 
@@ -406,7 +439,7 @@ namespace ConfigurationsManager
                         worksheet.View.ShowGridLines = false;
                         worksheet.Tables.Add(
                             worksheet.Cells[1, 1].LoadFromCollection(conflicts, true),
-                            string.Empty).TableStyle = TableStyles.Medium10;
+                            string.Empty).TableStyle = TableStyles.Medium14;
                         worksheet.Cells.AutoFitColumns();
                     }
 
@@ -419,16 +452,39 @@ namespace ConfigurationsManager
         {
             ClearControls();
 
-            ConfigDatagrid.ItemsSource = _configurations
-                .Where(c =>
-                    (c.InstanceName != null && c.InstanceName.ToLower().Contains(SearchTextbox.Text.ToLower().Trim()))
-                    || (c.ConfigurationKey != null && c.ConfigurationKey.ToLower().Contains(SearchTextbox.Text.ToLower().Trim()))
-                    || (c.ConfigurationValue != null && c.ConfigurationValue.ToLower().Contains(SearchTextbox.Text.ToLower().Trim())));
+            if (InstancesComboBox.SelectedIndex >= 0)
+            {
+                ConfigDatagrid.ItemsSource = _configurations
+                    .Where(c =>
+                        (c.InstanceName != null && c.InstanceName.ToLower().Equals(InstancesComboBox.SelectedItem.ToString().ToLower()))
+                        && ((c.ConfigurationKey != null && c.ConfigurationKey.ToLower().Contains(SearchTextbox.Text.ToLower().Trim()))
+                        || (c.ConfigurationValue != null && c.ConfigurationValue.ToLower().Contains(SearchTextbox.Text.ToLower().Trim()))));
 
-            FeaturesDatagrid.ItemsSource = _featureFlags
-                .Where(f =>
-                    (f.InstanceName != null && f.InstanceName.ToLower().Contains(SearchTextbox.Text.ToLower().Trim()))
-                    || (f.FlagName != null && f.FlagName.ToLower().Contains(SearchTextbox.Text.ToLower().Trim())));
+                FeaturesDatagrid.ItemsSource = _featureFlags
+                    .Where(f =>
+                        (f.InstanceName != null && f.InstanceName.ToLower().Equals(InstancesComboBox.SelectedItem.ToString().ToLower()))
+                        && (f.FlagName != null && f.FlagName.ToLower().Contains(SearchTextbox.Text.ToLower().Trim())));
+            }
+            else
+            {
+                ConfigDatagrid.ItemsSource = null;
+                FeaturesDatagrid.ItemsSource = null;
+            }
+        }
+
+        private void PopulateInstances()
+        {
+            var instances = _configurations.Select(c => c.InstanceName)
+                .Concat(_featureFlags.Select(f => f.InstanceName))
+                .Distinct()
+                .ToList();
+
+            InstancesComboBox.ItemsSource = instances;
+
+            if (instances.Any())
+            {
+                InstancesComboBox.SelectedIndex = 0;
+            }
         }
 
         private void ClearControls()
@@ -443,6 +499,26 @@ namespace ConfigurationsManager
 
             ConfigDatagrid.SelectedIndex = -1;
             FeaturesDatagrid.SelectedIndex = -1;
+        }
+
+        private void InstancesComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            PopulateDataGrids();
+        }
+
+        private void ToggleSwitch_OnIsCheckedChanged(object sender, EventArgs e)
+        {
+            var theme = ThemeManager.DetectAppStyle(Application.Current);
+            ThemeManager.ChangeAppStyle(Application.Current, theme.Item2, ThemeManager.GetInverseAppTheme(theme.Item1));
+        }
+
+        private void AccentsCombobox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var theme = ThemeManager.DetectAppStyle(Application.Current);
+            ThemeManager.ChangeAppStyle(
+                Application.Current,
+                ThemeManager.Accents.First(a => a.Name == AccentsCombobox.SelectedItem.ToString()),
+                theme.Item1);
         }
     }
 }

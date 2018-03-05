@@ -18,13 +18,13 @@
             Margin="10"
             Controls:TextBoxHelper.ClearTextButton="True"
             Controls:TextBoxHelper.UseFloatingWatermark="True"
-            Controls:TextBoxHelper.Watermark="Server" />
+            Controls:TextBoxHelper.Watermark="Server*" />
         <TextBox
             Name="DatabaseTextbox"
             Margin="10"
             Controls:TextBoxHelper.ClearTextButton="True"
             Controls:TextBoxHelper.UseFloatingWatermark="True"
-            Controls:TextBoxHelper.Watermark="Database" />
+            Controls:TextBoxHelper.Watermark="Database*" />
         <TextBox
             Name="UsernameTextbox"
             Margin="10"

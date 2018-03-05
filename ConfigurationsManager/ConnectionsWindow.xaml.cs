@@ -52,19 +52,19 @@ namespace ConfigurationsManager
             }
             else
             {
-                await this.ShowMessageAsync("Incomplete", "Please enter all fields");
+                await this.ShowMessageAsync("Incomplete", "Please enter Server & Database");
             }
         }
 
         private bool VerifyConnection()
         {
-            var isvalid = this.FindChildren<TextBox>()
-                .All(tb => !string.IsNullOrWhiteSpace(tb.Text));
+            //var isvalid = this.FindChildren<TextBox>()
+            //    .All(tb => !string.IsNullOrWhiteSpace(tb.Text));
 
-            isvalid = isvalid && this.FindChildren<PasswordBox>()
-                          .All(pw => !string.IsNullOrWhiteSpace(pw.Password));
-
-            return isvalid;
+            //isvalid = isvalid && this.FindChildren<PasswordBox>()
+            //              .All(pw => !string.IsNullOrWhiteSpace(pw.Password));
+            // return isvalid;
+            return !string.IsNullOrWhiteSpace(ServerTextbox.Text) && !string.IsNullOrEmpty(DatabaseTextbox.Text);
         }
     }
 }
